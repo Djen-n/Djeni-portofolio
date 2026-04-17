@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA & Performance académique — Djeni | Data & IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+
+/* ─── VARIABLES ─────────────────────────────────────────── */
+:root {
+  --bg:      #0b0c10;
+  --surface: #12131a;
+  --card:    #181923;
+  --border:  rgba(255,255,255,0.07);
+
+  --coral:   #ff6b6b;
+  --mint:    #43e97b;
+  --sky:     #38d9f5;
+  --violet:  #c77dff;
+  --amber:   #ffd166;
+
+  --text:    #f0f0f5;
+  --muted:   #8b8da8;
+
+  --r:    16px;
+  --r-lg: 24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ─── NAV ────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 3rem;
+  background: rgba(11,12,16,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--coral), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.nav-back:hover { color: var(--text); gap: 0.7rem; }
+
+/* ─── HERO ───────────────────────────────────────────────── */
+.project-hero {
+  padding: 10rem 3rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.15;
+  animation: float 10s ease-in-out infinite;
+}
+.blob-1 { width: 400px; height: 400px; background: var(--violet); top: -100px; right: 10%; }
+.blob-2 { width: 300px; height: 300px; background: var(--sky);    bottom: -80px; left: 5%; animation-delay: -5s; }
+
+@keyframes float {
+  0%,100%{ transform: translate(0,0) scale(1); }
+  50%    { transform: translate(20px,-20px) scale(1.05); }
+}
+
+.hero-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(199,125,255,0.1);
+  border: 1px solid rgba(199,125,255,0.25);
+  color: var(--violet);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-title .emoji { display: inline-block; margin-right: 0.3rem; }
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.meta-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meta-value {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: 'DM Sans', monospace;
+}
+
+/* ─── GALLERY ────────────────────────────────────────────── */
+.gallery-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.section-title::before {
+  content: '';
+  width: 4px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--violet), var(--sky));
+  border-radius: 4px;
+}
+
+.gallery-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.gallery-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+.gallery-slide {
+  min-width: 100%;
+  aspect-ratio: 16/10;
+  background: linear-gradient(135deg, rgba(199,125,255,0.1), rgba(56,217,245,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+}
+
+.gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--surface);
+}
+
+.slide-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted);
+}
+
+.slide-placeholder-icon { font-size: 4rem; }
+.slide-placeholder-text { font-size: 0.95rem; font-family: 'DM Sans', sans-serif; }
+
+.gallery-nav {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.7rem;
+  z-index: 10;
+}
+
+.gallery-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(11,12,16,0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.gallery-btn:hover {
+  background: rgba(199,125,255,0.2);
+  border-color: var(--violet);
+  transform: scale(1.05);
+}
+
+.gallery-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  background: var(--violet);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ─── CONTENT SECTION ────────────────────────────────────── */
+.content-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+  position: relative;
+  z-index: 2;
+}
+
+.content-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.content-block h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.content-block h3::before {
+  content: '';
+  width: 3px;
+  height: 20px;
+  background: var(--violet);
+  border-radius: 3px;
+}
+
+.content-block p {
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.content-block p:last-child { margin-bottom: 0; }
+
+.content-block ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.content-block li {
+  color: var(--muted);
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.content-block li::before {
+  content: '▹';
+  position: absolute;
+  left: 0;
+  color: var(--violet);
+  font-weight: bold;
+}
+
+.highlight-box {
+  background: rgba(255,209,102,0.06);
+  border: 1px solid rgba(255,209,102,0.2);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.highlight-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.highlight-text {
+  color: rgba(255,209,102,0.9);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+/* ─── PROJECT NAV ────────────────────────────────────────── */
+.project-nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 3rem 5rem;
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-card {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 2rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.nav-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.nav-card-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nav-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.nav-card-arrow {
+  color: var(--violet);
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.nav-card:hover .nav-card-arrow { transform: translateX(4px); }
+.nav-card:first-child:hover .nav-card-arrow { transform: translateX(-4px); }
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.85rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.btn-back:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+  gap: 0.7rem;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--coral), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .project-hero { padding: 8rem 1.5rem 3rem; }
+  .hero-meta { flex-direction: column; gap: 1rem; }
+  .gallery-section { padding: 3rem 1.5rem; }
+  .content-section { padding: 2rem 1.5rem 3rem; }
+  .content-block { padding: 1.8rem; }
+  .project-nav { flex-direction: column; padding: 2rem 1.5rem 4rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-inner > * { animation: fadeUp 0.6s ease both; }
+.hero-inner > *:nth-child(1) { animation-delay: 0.1s; }
+.hero-inner > *:nth-child(2) { animation-delay: 0.2s; }
+.hero-inner > *:nth-child(3) { animation-delay: 0.3s; }
+.hero-inner > *:nth-child(4) { animation-delay: 0.4s; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────── -->
+<nav>
+  <a href="index.html" class="nav-logo">Djeni.</a>
+  <a href="projets.html" class="nav-back">
+    ← Tous les projets
+  </a>
+</nav>
+
+<!-- ─── HERO ────────────────────────────────────────────── -->
+<section class="project-hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  
+  <div class="hero-inner">
+    <div class="hero-label">
+      ✓ Projet terminé · Data Python
+    </div>
+    
+    <h1 class="hero-title">
+      <!--<span class="emoji">🤖</span>-->
+      IA & Performance académique
+    </h1>
+    
+    <p class="hero-sub">
+      Analyse exploratoire d'un dataset Kaggle portant sur l'utilisation de l'intelligence artificielle par des étudiants et son impact sur leurs performances académiques.
+    </p>
+    
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Source</span>
+        <span class="meta-value">Kaggle — AI Usage & Academic Performance</span>
+      </div>
+      
+      <div class="meta-item">
+        <span class="meta-label">Type</span>
+        <span class="meta-value">Analyse exploratoire (EDA)</span>
+      </div>
+      
+      <div class="meta-item">
+        <span class="meta-label">Technologies</span>
+        <div class="tech-pills">
+          <span class="pill">Python</span>
+          <span class="pill">pandas</span>
+          <span class="pill">matplotlib</span>
+          <span class="pill">numpy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── GALLERY ─────────────────────────────────────────── -->
+<section class="gallery-section">
+  <h2 class="section-title">Visualisations & analyses</h2>
+  
+  <div class="gallery-slider">
+    <div class="gallery-track" id="galleryTrack">
+      
+      <!-- Slide 1 -->
+      <div class="gallery-slide">
+        <div class="slide-placeholder">
+          <div class="slide-placeholder-icon">📊</div>
+          <div class="slide-placeholder-text">Exploration des données — Uploadez votre image</div>
+        </div>
+        <!-- Remplace par : <img src="images/kaggle-1.png" alt="Exploration"> -->
+      </div>
+      
+      <!-- Slide 2 -->
+      <div class="gallery-slide">
+        <div class="slide-placeholder">
+          <div class="slide-placeholder-icon">📈</div>
+          <div class="slide-placeholder-text">Statistiques descriptives — Uploadez votre image</div>
+        </div>
+        <!-- Remplace par : <img src="images/kaggle-2.png" alt="Statistiques"> -->
+      </div>
+      
+      <!-- Slide 3 -->
+      <div class="gallery-slide">
+        <div class="slide-placeholder">
+          <div class="slide-placeholder-icon">🔍</div>
+          <div class="slide-placeholder-text">Corrélations — Uploadez votre image</div>
+        </div>
+        <!-- Remplace par : <img src="images/kaggle-3.png" alt="Corrélations"> -->
+      </div>
+      
+      <!-- Slide 4 -->
+      <div class="gallery-slide">
+        <div class="slide-placeholder">
+          <div class="slide-placeholder-icon">📉</div>
+          <div class="slide-placeholder-text">Visualisations clés — Uploadez votre image</div>
+        </div>
+        <!-- Remplace par : <img src="images/kaggle-4.png" alt="Visualisations"> -->
+      </div>
+      
+    </div>
+    
+    <div class="gallery-nav">
+      <button class="gallery-btn" id="prevBtn" onclick="moveSlide(-1)">‹</button>
+      <button class="gallery-btn" id="nextBtn" onclick="moveSlide(1)">›</button>
+    </div>
+  </div>
+  
+  <div class="gallery-dots" id="galleryDots"></div>
+</section>
+
+<!-- ─── CONTENT ─────────────────────────────────────────── -->
+<section class="content-section">
+  
+  <div class="content-block">
+    <h3>Contexte & objectif</h3>
+    <p>
+      Analyse d'un dataset public issu de Kaggle portant sur l'utilisation de l'intelligence artificielle par des étudiants et son impact sur leurs performances académiques.
+    </p>
+    <p>
+      L'objectif principal était d'explorer les données afin d'identifier des tendances, corrélations et variables influençant la performance académique en lien avec l'usage de l'IA.
+    </p>
+  </div>
+  
+  <div class="content-block">
+    <h3>Étapes réalisées</h3>
+    <ul>
+      <li>Chargement et exploration initiale du dataset avec pandas</li>
+      <li>Nettoyage des données : gestion des valeurs manquantes et détection des incohérences</li>
+      <li>Analyse statistique descriptive pour comprendre la distribution des variables</li>
+      <li>Visualisation des variables clés avec matplotlib</li>
+      <li>Identification de corrélations potentielles entre usage de l'IA et performances</li>
+      <li>Synthèse des insights principaux</li>
+    </ul>
+  </div>
+  
+  <div class="content-block">
+    <h3>Résultats & insights</h3>
+    <p>
+      L'analyse a permis de mettre en évidence plusieurs patterns intéressants concernant l'impact de l'utilisation de l'IA sur les résultats académiques des étudiants.
+    </p>
+    <p>
+      Les visualisations créées ont facilité la compréhension des relations entre les différentes variables du dataset, permettant d'identifier les facteurs les plus influents sur la performance.
+    </p>
+    <div class="highlight-box">
+      <span class="highlight-icon">⚠️</span>
+      <p class="highlight-text">
+        Des améliorations sont en cours, notamment l'ajout de visualisations avancées et d'indicateurs synthétiques pour approfondir l'analyse.
+      </p>
+    </div>
+  </div>
+  
+  <div class="content-block">
+    <h3>Compétences développées</h3>
+    <ul>
+      <li>Nettoyage et préparation de données brutes</li>
+      <li>Lecture critique d'un dataset et détection d'anomalies</li>
+      <li>Création de visualisations pertinentes avec matplotlib</li>
+      <li>Analyse statistique et interprétation de résultats</li>
+      <li>Utilisation de pandas pour la manipulation de données</li>
+      <li>Méthodologie d'analyse exploratoire (EDA)</li>
+    </ul>
+  </div>
+  
+</section>
+
+<!-- ─── PROJECT NAV ────────────────────────────────────── -->
+<section class="project-nav">
+  <a href="projet-idreamu.html" class="nav-card">
+    <span class="nav-card-label">Projet précédent</span>
+    <span class="nav-card-title">I DREAM U</span>
+    <span class="nav-card-arrow">←</span>
+  </a>
+  
+  <a href="projets.html" class="btn-back">
+    ← Tous les projets
+  </a>
+  
+  <a href="projet-dashboards.html" class="nav-card">
+    <span class="nav-card-label">Projet suivant</span>
+    <span class="nav-card-title">Dashboards Excel & Power BI</span>
+    <span class="nav-card-arrow">→</span>
+  </a>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────── -->
+<footer>
+  <a href="index.html" class="footer-logo">Djeni.</a>
+  <div class="footer-links">
+    <a href="index.html">Accueil</a>
+    <a href="projets.html">Projets</a>
+    <a href="mailto:votre@email.com">Email</a>
+  </div>
+  <span class="footer-copy">© 2026 — Portfolio Data & IA</span>
+</footer>
+
+<!-- ─── JS ──────────────────────────────────────────────── -->
+<script>
+let currentSlide = 0;
+const track = document.getElementById('galleryTrack');
+const slides = track.children;
+const totalSlides = slides.length;
+const dotsContainer = document.getElementById('galleryDots');
+
+// Create dots
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.classList.add('dot');
+  if (i === 0) dot.classList.add('active');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsContainer.appendChild(dot);
+}
+
+function updateSlider() {
+  track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  
+  // Update dots
+  document.querySelectorAll('.dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentSlide);
+  });
+  
+  // Update buttons
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+}
+
+function moveSlide(direction) {
+  currentSlide += direction;
+  if (currentSlide < 0) currentSlide = 0;
+  if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+  updateSlider();
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+  updateSlider();
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') moveSlide(-1);
+  if (e.key === 'ArrowRight') moveSlide(1);
+});
+
+// Init
+updateSlider();
+</script>
+
+</body>
+</html>
